@@ -45,11 +45,11 @@ class FaceMaskApp(App):
 
     def build(self):
         # create default layout
-        self.camera_no = 0
+        self.camera_no = -1
         layout = BoxLayout(orientation='vertical')
 
         self.label = Label(text='Face mask recognition software',
-                           size_hint=(1, 0.2), font_size=24)
+                           size_hint=(1, 0.1), font_size=32)
 
         # play/pause button
         self.play_button = Button(text='Play', size_hint=(
@@ -78,6 +78,7 @@ class FaceMaskApp(App):
         return layout
 
     def play_camera(self, *args):
+        # print(self.camera_no)
         if self.my_camera.state == 'play':
             self.my_camera.state = 'stop'
             self.play_button.text = 'Play'
@@ -87,12 +88,13 @@ class FaceMaskApp(App):
 
     def change_camera(self, *args):
         self.capture.release()
-        if(self.camera_no == 0):
-            self.camera_no = 1
-        elif(self.camera_no == 1):
-            self.camera_no = -1
-        else:
-            self.camera_no = 0
+        self.camera_no = -self.camera_no
+        # if(self.camera_no == 0):
+        #     self.camera_no = 1
+        # elif(self.camera_no == 1):
+        #     self.camera_no = -1
+        # else:
+        #     self.camera_no = 0
 
         self.capture = cv2.VideoCapture(self.camera_no)
         self.my_camera.capture = self.capture
