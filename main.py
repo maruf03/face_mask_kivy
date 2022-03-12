@@ -9,7 +9,7 @@ from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.graphics.texture import Texture
 
-from deeplearning import face_mask_prediction
+# from deeplearning import face_mask_prediction
 
 
 class KivyCamera(Image):
@@ -27,8 +27,9 @@ class KivyCamera(Image):
         if ret == False:
             return
 
-        image = face_mask_prediction(frames)
-
+        # image = face_mask_prediction(frames)
+        image = frames
+        
         # convert it to texture
         buf1 = cv2.flip(image, 0)
         buf = buf1.tostring()
@@ -44,6 +45,7 @@ class FaceMaskApp(App):
 
     def build(self):
         # create default layout
+        self.camera_no = 0
         layout = BoxLayout(orientation='vertical')
 
         self.label = Label(text='Face mask recognition software',
@@ -51,10 +53,17 @@ class FaceMaskApp(App):
 
         # play/pause button
         self.play_button = Button(text='Play', size_hint=(
-            1, 0.1), on_press=self.play_camera)
+            1, 1), on_press=self.play_camera)
+        self.change_camera_button = Button(text='Change', size_hint=(
+            1, 1), on_press=self.change_camera)
+
+        button_layout = BoxLayout(orientation='horizontal', size_hint=(1, 0.1))
+
+        button_layout.add_widget(self.play_button)
+        button_layout.add_widget(self.change_camera_button)
 
         # create a opencv camera object
-        self.capture = cv2.VideoCapture(0)
+        self.capture = cv2.VideoCapture(self.camera_no)
         # self.capture.set(cv2.CAP_PROP_FRAME_WIDTH, 600)
         # self.capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 400)
 
@@ -64,7 +73,7 @@ class FaceMaskApp(App):
 
         # add camera widget and play/stop button to the layout
         layout.add_widget(self.label)
-        layout.add_widget(self.play_button)
+        layout.add_widget(button_layout)
         layout.add_widget(self.my_camera)
         return layout
 
@@ -75,6 +84,18 @@ class FaceMaskApp(App):
         else:
             self.my_camera.state = 'play'
             self.play_button.text = 'Stop'
+
+    def change_camera(self, *args):
+        self.capture.release()
+        if(self.camera_no == 0):
+            self.camera_no = 1
+        elif(self.camera_no == 1):
+            self.camera_no = -1
+        else:
+            self.camera_no = 0
+
+        self.capture = cv2.VideoCapture(self.camera_no)
+        self.my_camera.capture = self.capture
 
     def on_stop(self):
         #without this, app will not exit even if the window is closed
