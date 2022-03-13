@@ -109,9 +109,9 @@ class FaceMaskApp(App):
         # self.my_camera.capture = self.capture.
         return
 
-    def on_stop(self):
+    # def on_stop(self):
         #without this, app will not exit even if the window is closed
-        self.capture.release()
+        # self.capture.release()
 
 
 if __name__ == '__main__':
