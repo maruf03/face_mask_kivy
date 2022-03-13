@@ -8,6 +8,7 @@ from kivy.uix.image import Image
 from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.graphics.texture import Texture
+from tflite.tflite import TFLWrapper
 
 # from deeplearning import face_mask_prediction
 
@@ -44,8 +45,13 @@ class FaceMaskApp(App):
     title = 'Face mask recognition software'
 
     def build(self):
+        try:
+            from android.permissions import request_permissions, Permission
+            request_permissions([Permission.WRITE_EXTERNAL_STORAGE])
+        except ImportError:
+            pass
         # create default layout
-        self.camera_no = -1
+        self.camera_no = 0
         layout = BoxLayout(orientation='vertical')
 
         self.label = Label(text='Face mask recognition software',
@@ -87,17 +93,18 @@ class FaceMaskApp(App):
             self.play_button.text = 'Stop'
 
     def change_camera(self, *args):
-        self.capture.release()
-        self.camera_no = -self.camera_no
-        # if(self.camera_no == 0):
-        #     self.camera_no = 1
-        # elif(self.camera_no == 1):
-        #     self.camera_no = -1
-        # else:
-        #     self.camera_no = 0
+        # self.capture.release()
+        # self.camera_no = -self.camera_no
+        # # if(self.camera_no == 0):
+        # #     self.camera_no = 1
+        # # elif(self.camera_no == 1):
+        # #     self.camera_no = -1
+        # # else:
+        # #     self.camera_no = 0
 
-        self.capture = cv2.VideoCapture(self.camera_no)
-        self.my_camera.capture = self.capture
+        # self.capture = cv2.VideoCapture(self.camera_no)
+        # self.my_camera.capture = self.capture.
+        return
 
     def on_stop(self):
         #without this, app will not exit even if the window is closed
