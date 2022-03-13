@@ -1,7 +1,7 @@
 import cv2
 
 from kivy.app import App
-from kivy.clock import Clock
+# from kivy.clock import Clock
 
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.image import Image
@@ -9,36 +9,37 @@ from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.graphics.texture import Texture
 from tflite.tflite import TFLWrapper
+from camera import Camera2
 
 # from deeplearning import face_mask_prediction
 
 
-class KivyCamera(Image):
-    def __init__(self, capture, fps, **kwargs):
-        super(KivyCamera, self).__init__(**kwargs)
-        self.state = 'stop'
-        self.capture = capture
+# class KivyCamera(Image):
+#     def __init__(self, capture, fps, **kwargs):
+#         super(KivyCamera, self).__init__(**kwargs)
+#         self.state = 'stop'
+#         self.capture = capture
 
-        Clock.schedule_interval(self.update, 1.0 / fps)
+#         Clock.schedule_interval(self.update, 1.0 / fps)
 
-    def update(self, dt):
-        if self.state == 'stop':
-            return
-        ret, frames = self.capture.read()
-        if ret == False:
-            return
+#     def update(self, dt):
+#         if self.state == 'stop':
+#             return
+#         ret, frames = self.capture.read()
+#         if ret == False:
+#             return
 
-        # image = face_mask_prediction(frames)
-        image = frames
+#         # image = face_mask_prediction(frames)
+#         image = frames
         
-        # convert it to texture
-        buf1 = cv2.flip(image, 0)
-        buf = buf1.tostring()
-        image_texture = Texture.create(
-            size=(image.shape[1], image.shape[0]), colorfmt='bgr')
-        image_texture.blit_buffer(buf, colorfmt='bgr', bufferfmt='ubyte')
-        # display image from the texture
-        self.texture = image_texture
+#         # convert it to texture
+#         buf1 = cv2.flip(image, 0)
+#         buf = buf1.tostring()
+#         image_texture = Texture.create(
+#             size=(image.shape[1], image.shape[0]), colorfmt='bgr')
+#         image_texture.blit_buffer(buf, colorfmt='bgr', bufferfmt='ubyte')
+#         # display image from the texture
+#         self.texture = image_texture
 
 
 class FaceMaskApp(App):
@@ -47,7 +48,7 @@ class FaceMaskApp(App):
     def build(self):
         try:
             from android.permissions import request_permissions, Permission
-            request_permissions([Permission.WRITE_EXTERNAL_STORAGE])
+            request_permissions([Permission.CAMERA])
         except ImportError:
             pass
         # create default layout
@@ -69,14 +70,14 @@ class FaceMaskApp(App):
         button_layout.add_widget(self.change_camera_button)
 
         # create a opencv camera object
-        self.capture = cv2.VideoCapture(self.camera_no)
+        # self.capture = cv2.VideoCapture(self.camera_no)
         # self.capture.set(cv2.CAP_PROP_FRAME_WIDTH, 600)
         # self.capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 400)
 
         # create a camera widget
-        self.my_camera = KivyCamera(
-            capture=self.capture, fps=24, size_hint=(1, 1))
-
+        # self.my_camera = KivyCamera(capture=self.capture, fps=24, size_hint=(1, 1))
+        self.my_camera = Camera2()
+        self.my_camera.play = True
         # add camera widget and play/stop button to the layout
         layout.add_widget(self.label)
         layout.add_widget(button_layout)
@@ -86,10 +87,12 @@ class FaceMaskApp(App):
     def play_camera(self, *args):
         # print(self.camera_no)
         if self.my_camera.state == 'play':
-            self.my_camera.state = 'stop'
+            # self.my_camera.state = 'stop'
+            self.my_camera.play = False
             self.play_button.text = 'Play'
         else:
-            self.my_camera.state = 'play'
+            # self.my_camera.state = 'play'
+            self.my_camera.play = True
             self.play_button.text = 'Stop'
 
     def change_camera(self, *args):
