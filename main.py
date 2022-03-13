@@ -51,7 +51,7 @@ class FaceMaskApp(App):
         except ImportError:
             pass
         # create default layout
-        self.camera_no = 0
+        self.camera_no = 1
         layout = BoxLayout(orientation='vertical')
 
         self.label = Label(text='Face mask recognition software',
